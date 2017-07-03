@@ -1,0 +1,51 @@
+[
+  {
+    "name": "vault",
+    "image": "vault:0.7.3",
+    "portMappings": [
+      {
+        "containerPort": 8200,
+        "hostPort": 8200,
+        "protocol": "tcp"
+      }
+    ],
+    "memory": 128,
+    "command": [
+      "agent",
+      "-server",
+      "-client=0.0.0.0",
+      "-bootstrap-expect=3",
+      "-ui",
+      "-datacenter=us-east-1",
+      "-retry-join-ec2-tag-key=Role",
+      "-retry-join-ec2-tag-value=vault",
+      "-config-dir=/consul/config",
+      "-data-dir=/consul/data"
+    ],
+    "environment": [
+      {
+        "name": "VAULT_LOCAL_CONFIG",
+        "value": "Placeholder"
+      }
+    ],
+    "mountPoints": [
+      {
+        "sourceVolume": "vault_config",
+        "containerPath": "/vault/config",
+        "readOnly": false
+      },
+      {
+        "sourceVolume": "vault_logs",
+        "containerPath": "/vault/logs",
+        "readOnly": false
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-region": "us-east-1",
+        "awslogs-group": "${log_group}"
+      }
+    }
+  }
+]
