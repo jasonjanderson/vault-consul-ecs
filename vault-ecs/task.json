@@ -11,23 +11,14 @@
     ],
     "memory": 128,
     "command": [
-      "agent",
-      "-server",
-      "-client=0.0.0.0",
-      "-bootstrap-expect=3",
-      "-ui",
-      "-datacenter=us-east-1",
-      "-retry-join-ec2-tag-key=Role",
-      "-retry-join-ec2-tag-value=vault",
-      "-config-dir=/consul/config",
-      "-data-dir=/consul/data"
+      "vault",
+      "server",
+      "-config=/vault/config"
     ],
     "environment": [
-      {
-        "name": "VAULT_LOCAL_CONFIG",
-        "value": "Placeholder"
-      }
+
     ],
+    "privileged": true,
     "mountPoints": [
       {
         "sourceVolume": "vault_config",

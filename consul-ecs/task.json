@@ -1,7 +1,7 @@
 [
   {
     "name": "consul",
-    "image": "consul:0.8.4",
+    "image": "consul:0.8.5",
     "portMappings": [
       {
         "containerPort": 8500,

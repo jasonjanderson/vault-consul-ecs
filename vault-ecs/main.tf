@@ -30,27 +30,25 @@ data "aws_alb" "alb" {
   arn = "${var.alb_arn}"
 }
 
-
-
 resource "aws_security_group_rule" "http_api" {
-  security_group_id        = "${var.ecs_security_group_id}"
-  type                     = "ingress"
-  from_port                = 8200
-  to_port                  = 8200
-  protocol                 = "tcp"
-  self = true
+  security_group_id = "${var.ecs_security_group_id}"
+  type              = "ingress"
+  from_port         = 8200
+  to_port           = 8200
+  protocol          = "tcp"
+  self              = true
 }
-
 
 resource "aws_ecs_task_definition" "vault" {
   family                = "vault"
   container_definitions = "${data.template_file.container_definitions.rendered}"
-  network_mode = "host"
+  network_mode          = "host"
 
   volume {
     name      = "vault_config"
-    host_path = "/data/vault/config"
+    host_path = "/efs/vault/config"
   }
+
   volume {
     name      = "vault_logs"
     host_path = "/data/vault/logs"
@@ -69,13 +67,12 @@ resource "aws_ecs_service" "vault" {
     type  = "spread"
     field = "instanceId"
   }
-/*
+
   load_balancer {
     target_group_arn = "${aws_alb_target_group.target_group.arn}"
-    container_name = "consul"
-    container_port = 8500
+    container_name   = "vault"
+    container_port   = 8200
   }
-  */
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {
@@ -83,3 +80,4 @@ resource "aws_cloudwatch_log_group" "log_group" {
 }
 
 ### Outputs ###
+

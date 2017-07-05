@@ -7,7 +7,6 @@ data "aws_iam_policy_document" "assume_role_policy" {
 
       identifiers = [
         "ecs.amazonaws.com",
-        "application-autoscaling.amazonaws.com"
       ]
     }
 
@@ -20,27 +19,26 @@ data "aws_iam_policy_document" "policy" {
     effect = "Allow"
 
     actions = [
-        "ec2:DescribeInstances",
-        "application-autoscaling:Describe*",
-        "application-autoscaling:PutScalingPolicy",
-        "application-autoscaling:RegisterScalableTarget",
-        "cloudwatch:DescribeAlarms",
-        "cloudwatch:PutMetricAlarm",
-        "ecs:List*",
-        "ecs:Describe*",
-        "ecs:CreateService",
-        "elasticloadbalancing:Describe*",
-        "iam:AttachRolePolicy",
-        "iam:CreateRole",
-        "iam:GetPolicy",
-        "iam:GetPolicyVersion",
-        "iam:GetRole",
-        "iam:ListAttachedRolePolicies",
-        "iam:ListRoles",
-        "iam:ListGroups",
-        "iam:ListUsers",
-        "elasticloadbalancing:RegisterTargets"
-
+      "ec2:DescribeInstances",
+      "application-autoscaling:Describe*",
+      "application-autoscaling:PutScalingPolicy",
+      "application-autoscaling:RegisterScalableTarget",
+      "cloudwatch:DescribeAlarms",
+      "cloudwatch:PutMetricAlarm",
+      "ecs:List*",
+      "ecs:Describe*",
+      "ecs:CreateService",
+      "elasticloadbalancing:Describe*",
+      "iam:AttachRolePolicy",
+      "iam:CreateRole",
+      "iam:GetPolicy",
+      "iam:GetPolicyVersion",
+      "iam:GetRole",
+      "iam:ListAttachedRolePolicies",
+      "iam:ListRoles",
+      "iam:ListGroups",
+      "iam:ListUsers",
+      "elasticloadbalancing:*",
     ]
 
     resources = ["*"]
