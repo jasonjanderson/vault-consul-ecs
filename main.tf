@@ -18,22 +18,22 @@ variable "instance_type" {
 
 variable "min_size" {
   description = "Minimum instance count"
-  default     = 3
+  default     = 5
 }
 
 variable "max_size" {
   description = "Maxmimum instance count"
-  default     = 4
+  default     = 5
 }
 
 variable "desired_capacity" {
   description = "Desired instance count"
-  default     = 3
+  default     = 5
 }
 
 variable "key_name" {
   description = "SSH key name to use"
-  default     = "vault"
+  default     = "key"
 }
 
 variable "instance_ebs_optimized" {
@@ -54,11 +54,11 @@ variable "docker_volume_size" {
 ## #Main ###
 provider "aws" {
   region  = "us-east-1"
-  profile = "sandbox"
+
 }
 
 data "aws_vpc" "current" {
-  default = true
+default = true
 }
 
 data "aws_subnet_ids" "private" {
@@ -104,6 +104,7 @@ module "consul" {
   vpc_id                = "${data.aws_vpc.current.id}"
 }
 
+
 module "vault" {
   source = "./vault-ecs"
 
@@ -112,7 +113,20 @@ module "vault" {
   ecs_cluster_id        = "${module.ecs_cluster.id}"
   ecs_security_group_id = "${module.ecs_cluster.security_group_id}"
   vpc_id                = "${data.aws_vpc.current.id}"
+  alb_address = "${aws_alb.alb.dns_name}"
 }
+
+module "vault-ui" {
+  source = "./vault-ui-ecs"
+
+  alb_arn               = "${aws_alb.alb.arn}"
+  alb_security_group_id = "${aws_security_group.alb.id}"
+  ecs_cluster_id        = "${module.ecs_cluster.id}"
+  ecs_security_group_id = "${module.ecs_cluster.security_group_id}"
+  vpc_id                = "${data.aws_vpc.current.id}"
+  alb_address = "${aws_alb.alb.dns_name}"
+}
+
 
 resource "aws_security_group" "alb" {
   name        = "${var.application}-${var.environment}-${var.role}-alb"

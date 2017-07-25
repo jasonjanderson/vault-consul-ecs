@@ -4,6 +4,7 @@ resource "aws_alb_target_group" "target_group" {
   protocol = "HTTP"
   vpc_id   = "${var.vpc_id}"
 
+
   health_check {
     path = "/v1/status/leader"
     port = 8500
@@ -39,4 +40,14 @@ resource "aws_security_group_rule" "alb_http_api" {
   to_port     = 8500
   protocol    = "tcp"
   cidr_blocks = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "alb_health_check" {
+  security_group_id = "${var.alb_security_group_id}"
+
+  type        = "egress"
+  from_port   = 8500
+  to_port     = 8500
+  protocol    = "tcp"
+  source_security_group_id = "${var.ecs_security_group_id}"
 }

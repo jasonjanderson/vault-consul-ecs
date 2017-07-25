@@ -8,7 +8,7 @@ variable "environment" {
 }
 
 variable "role" {
-  default = "vault"
+  default = "vault-ui"
 }
 
 variable "ecs_security_group_id" {}
@@ -24,7 +24,7 @@ data "template_file" "container_definitions" {
 
   vars {
     log_group = "${aws_cloudwatch_log_group.log_group.name}"
-   consul_address = "${var.alb_address}:8500"
+    vault_ui_address = "http://${var.alb_address}:8200"
   }
 }
 
@@ -35,41 +35,22 @@ data "aws_alb" "alb" {
 resource "aws_security_group_rule" "http_api" {
   security_group_id = "${var.ecs_security_group_id}"
   type              = "ingress"
-  from_port         = 8200
-  to_port           = 8200
+  from_port         = 8000
+  to_port           = 8000
   protocol          = "tcp"
   self              = true
 }
 
-resource "aws_security_group_rule" "cluster" {
-  security_group_id = "${var.ecs_security_group_id}"
-  type              = "ingress"
-  from_port         = 8201
-  to_port           = 8201
-  protocol          = "tcp"
-  self              = true
-}
-
-resource "aws_ecs_task_definition" "vault" {
-  family                = "vault"
+resource "aws_ecs_task_definition" "vault_ui" {
+  family                = "vault-ui"
   container_definitions = "${data.template_file.container_definitions.rendered}"
   network_mode          = "host"
-
-  volume {
-    name      = "vault_config"
-    host_path = "/efs/vault/config"
-  }
-
-  volume {
-    name      = "vault_logs"
-    host_path = "/data/vault/logs"
-  }
 }
 
-resource "aws_ecs_service" "vault" {
-  name            = "vault"
+resource "aws_ecs_service" "vault_ui" {
+  name            = "vault-ui"
   cluster         = "${var.ecs_cluster_id}"
-  task_definition = "${aws_ecs_task_definition.vault.arn}"
+  task_definition = "${aws_ecs_task_definition.vault_ui.arn}"
   desired_count   = 2
   iam_role        = "${aws_iam_role.role.arn}"
   depends_on      = ["aws_iam_role_policy_attachment.policy"]
@@ -81,10 +62,9 @@ resource "aws_ecs_service" "vault" {
 
   load_balancer {
     target_group_arn = "${aws_alb_target_group.target_group.arn}"
-    container_name   = "vault"
-    container_port   = 8200
+    container_name   = "vault-ui"
+    container_port   = 8000
   }
-  depends_on = ["aws_ecs_task_definition.vault"]
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {

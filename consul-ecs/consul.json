@@ -1,0 +1,13 @@
+{
+      "server": true,
+      "client_addr": "0.0.0.0",
+      "bootstrap_expect": 3,
+        "data_dir": "/consul/data",
+        "retry_join_ec2": {
+                "region": "us-east-1",
+                "tag_key": "Role",
+                "tag_value": "vault"
+        },
+        "datacenter": "us-east-1",
+        "ui": true
+}

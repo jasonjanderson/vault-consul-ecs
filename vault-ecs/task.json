@@ -11,12 +11,13 @@
     ],
     "memory": 128,
     "command": [
-      "vault",
-      "server",
-      "-config=/vault/config"
+      "server"
     ],
     "environment": [
-
+      {
+        "name": "VAULT_LOCAL_CONFIG",
+        "value": "{\r\n  \"backend\": {\r\n    \"consul\": {\r\n      \"address\": \"${consul_address}\",\r\n      \"path\": \"vault\",\r\n      \"scheme\": \"http\"\r\n    }\r\n  },\r\n    \"listener\": {\r\n    \"tcp\": {\r\n        \"address\": \"0.0.0.0:8200\",\r\n  \"tls_disable\": 1\r\n    }},\r\n  \"disable_mlock\": true\r\n}"
+      }
     ],
     "privileged": true,
     "mountPoints": [
